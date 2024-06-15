@@ -15,6 +15,7 @@ import re
 import os
 import json
 import requests
+from security import safe_requests
 
 # For a PR to be properly labeled it should have release notes label and one topic label
 PULL_REQUEST_EXP = "Pull Request resolved:.*pull/(.*)"
@@ -38,7 +39,7 @@ REQUEST_HEADERS = {'Accept': 'application/vnd.github.v3+json', 'Authorization': 
 
 
 def query_pytorch(cmd: str) -> Any:
-    response = requests.get(f"{PYTORCH_REPO}/{cmd}", headers=REQUEST_HEADERS)
+    response = safe_requests.get(f"{PYTORCH_REPO}/{cmd}", headers=REQUEST_HEADERS)
     return response.json()
 
 

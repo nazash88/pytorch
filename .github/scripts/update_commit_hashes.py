@@ -4,6 +4,7 @@ import subprocess
 import requests
 from typing import Any, Dict
 from argparse import ArgumentParser
+from security import safe_requests
 
 MERGEBOT_TOKEN = os.environ["MERGEBOT_TOKEN"]
 PYTORCHBOT_TOKEN = os.environ["PYTORCHBOT_TOKEN"]
@@ -30,8 +31,7 @@ def git_api(
             headers=headers,
         ).json()
     else:
-        return requests.get(
-            f"https://api.github.com{url}",
+        return safe_requests.get(f"https://api.github.com{url}",
             params=params,
             headers=headers,
         ).json()

@@ -11,3 +11,4 @@ six
 types-dataclasses
 typing_extensions
 sympy
+security==1.2.1

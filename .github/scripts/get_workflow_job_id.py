@@ -2,9 +2,9 @@
 # workflow. GitHub does not provide this information to workflow runs, so we
 # need to figure it out based on what they *do* provide.
 
-import requests
 import os
 import argparse
+from security import safe_requests
 
 # Our strategy is to retrieve the parent workflow run, then filter its jobs on
 # RUNNER_NAME to figure out which job we're currently running.
@@ -40,14 +40,13 @@ REQUEST_HEADERS = {
     "Authorization": "token " + GITHUB_TOKEN,
 }
 
-response = requests.get(
-    f"{PYTORCH_GITHUB_API}/actions/runs/{args.workflow_run_id}/jobs?per_page=100",
+response = safe_requests.get(f"{PYTORCH_GITHUB_API}/actions/runs/{args.workflow_run_id}/jobs?per_page=100",
     headers=REQUEST_HEADERS,
 )
 
 jobs = response.json()["jobs"]
 while "next" in response.links.keys():
-    response = requests.get(response.links["next"]["url"], headers=REQUEST_HEADERS)
+    response = safe_requests.get(response.links["next"]["url"], headers=REQUEST_HEADERS)
     jobs.extend(response.json()["jobs"])
 
 # Sort the jobs list by start time, in descending order. We want to get the most
