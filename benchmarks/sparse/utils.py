@@ -1,9 +1,9 @@
 import torch
 import functools
-import random
 import operator
 import numpy as np
 import time
+import secrets
 
 # shim for torch.cuda.Event when running on cpu
 class Event(object):
@@ -21,7 +21,7 @@ def gen_sparse_csr(shape, nnz):
     fill_value = 0
     total_values = functools.reduce(operator.mul, shape, 1)
     dense = np.random.randn(total_values)
-    fills = random.sample(list(range(total_values)), total_values - nnz)
+    fills = secrets.SystemRandom().sample(list(range(total_values)), total_values - nnz)
 
     for f in fills:
         dense[f] = fill_value
@@ -34,8 +34,8 @@ def gen_sparse_coo(shape, nnz):
     values = []
     indices = [[], []]
     for n in range(nnz):
-        row = random.randint(0, shape[0] - 1)
-        col = random.randint(0, shape[1] - 1)
+        row = secrets.SystemRandom().randint(0, shape[0] - 1)
+        col = secrets.SystemRandom().randint(0, shape[1] - 1)
         indices[0].append(row)
         indices[1].append(col)
         values.append(dense[row, col])
@@ -45,7 +45,7 @@ def gen_sparse_coo(shape, nnz):
 def gen_sparse_coo_and_csr(shape, nnz):
     total_values = functools.reduce(operator.mul, shape, 1)
     dense = np.random.randn(total_values)
-    fills = random.sample(list(range(total_values)), total_values - nnz)
+    fills = secrets.SystemRandom().sample(list(range(total_values)), total_values - nnz)
 
     for f in fills:
         dense[f] = 0
