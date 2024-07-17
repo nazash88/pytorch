@@ -9,6 +9,7 @@ import time
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple, Optional, Pattern
+from security import safe_command
 
 
 IS_WINDOWS: bool = os.name == "nt"
@@ -65,8 +66,7 @@ def run_command(
     logging.debug("$ %s", " ".join(args))
     start_time = time.monotonic()
     try:
-        return subprocess.run(
-            args,
+        return safe_command.run(subprocess.run, args,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )

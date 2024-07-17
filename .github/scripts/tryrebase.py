@@ -7,6 +7,7 @@ import re
 from typing import Any
 from gitutils import get_git_remote_name, get_git_repo_dir, GitRepo
 from trymerge import gh_post_pr_comment as gh_post_comment, GitHubPR
+from security import safe_command
 
 
 def parse_args() -> Any:
@@ -41,8 +42,8 @@ def rebase_onto(pr: GitHubPR, repo: GitRepo, onto_branch: str, dry_run: bool = F
 
 
 def rebase_ghstack_onto(pr: GitHubPR, repo: GitRepo, onto_branch: str, dry_run: bool = False) -> None:
-    if subprocess.run([sys.executable, "-m", "ghstack", "--help"], capture_output=True).returncode != 0:
-        subprocess.run([sys.executable, "-m", "pip", "install", "ghstack"])
+    if safe_command.run(subprocess.run, [sys.executable, "-m", "ghstack", "--help"], capture_output=True).returncode != 0:
+        safe_command.run(subprocess.run, [sys.executable, "-m", "pip", "install", "ghstack"])
     orig_ref = f"{re.sub(r'/head$', '/orig', pr.head_ref())}"
     onto_branch = f"refs/remotes/origin/{onto_branch}"
 

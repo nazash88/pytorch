@@ -30,6 +30,7 @@ import torch
 from torch.utils.benchmark.op_fuzzers import unary
 from torch.utils.benchmark import Timer, Measurement
 from typing import Dict, Tuple, List
+from security import safe_command
 
 
 _MAIN, _SUBPROCESS = "main", "subprocess"
@@ -364,8 +365,7 @@ def read_results(result_file: str):
 
 
 def run(cmd, cuda_visible_devices=""):
-    return subprocess.run(
-        cmd,
+    return safe_command.run(subprocess.run, cmd,
         env={
             "CUDA_VISIBLE_DEVICES": str(cuda_visible_devices),
             "PATH": os.getenv("PATH", ""),
