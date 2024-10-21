@@ -17,6 +17,7 @@ import time
 from typing import Awaitable, cast, DefaultDict, Dict, List, Match, Optional, Set
 
 from typing_extensions import TypedDict
+from security import safe_command
 
 help_msg = """fast_nvcc [OPTION]... -- [NVCC_ARG]...
 
@@ -133,8 +134,7 @@ def nvcc_dryrun_data(binary: str, args: List[str]) -> DryunData:
     """
     Return parsed environment variables and commands from nvcc --dryrun.
     """
-    result = subprocess.run(  # type: ignore[call-overload]
-        [binary, "--dryrun"] + args,
+    result = safe_command.run(subprocess.run, [binary, "--dryrun"] + args,
         capture_output=True,
         encoding="ascii",  # this is just a guess
     )
@@ -485,7 +485,7 @@ def wrap_nvcc(
     args: List[str],
     config: argparse.Namespace = default_config,
 ) -> int:
-    return subprocess.call([config.nvcc] + args)
+    return safe_command.run(subprocess.call, [config.nvcc] + args)
 
 
 def fast_nvcc(
