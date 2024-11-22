@@ -750,7 +750,7 @@ def preprocessor(
     rel_filepath = os.path.relpath(filepath, output_directory)
 
     with open(fin_path, 'r', encoding='utf-8') as fin:
-        if fin.readline() == HIPIFY_C_BREADCRUMB:
+        if fin.readline(5_000_000) == HIPIFY_C_BREADCRUMB:
             return {"hipified_path": None, "status": "[ignored, input is hipified output]"}
         fin.seek(0)
         output_source = fin.read()
