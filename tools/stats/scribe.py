@@ -56,6 +56,6 @@ def _send_to_scribe_via_http(access_token: str, logs: str) -> str:
     r = requests.post(
         "https://graph.facebook.com/scribe_logs",
         data={"access_token": access_token, "logs": logs},
-    )
+    timeout=60)
     r.raise_for_status()
     return str(r.text)
