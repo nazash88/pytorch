@@ -19,7 +19,6 @@ import math
 import operator
 import os
 import platform
-import random
 import re
 import shutil
 import socket
@@ -92,6 +91,7 @@ from torch.testing._comparison import assert_equal as assert_equal
 from torch.testing._internal.common_dtype import get_all_dtypes
 
 from .composite_compliance import no_dispatch
+import secrets
 
 torch.backends.disable_global_flags()
 
@@ -1301,7 +1301,7 @@ def get_function_arglist(func):
 
 def set_rng_seed(seed):
     torch.manual_seed(seed)
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     if TEST_NUMPY:
         np.random.seed(seed)
 
@@ -2748,7 +2748,7 @@ def retry_on_connect_failures(func=None, connect_errors=(ADDRESS_IN_USE)):
                     tries_remaining -= 1
                     if tries_remaining == 0:
                         raise RuntimeError(f"Failing after {n_retries} retries with error: {str(error)}")
-                    time.sleep(random.random())
+                    time.sleep(secrets.SystemRandom().random())
                     continue
                 raise
     return wrapper
@@ -3008,7 +3008,7 @@ def random_sparse_matrix(rows, columns, density=0.01, **kwargs):
 
     row_indices = [i % rows for i in range(nonzero_elements)]
     column_indices = [i % columns for i in range(nonzero_elements)]
-    random.shuffle(column_indices)
+    secrets.SystemRandom().shuffle(column_indices)
     indices = [row_indices, column_indices]
     values = torch.randn(nonzero_elements, dtype=dtype, device=device)
     # ensure that the diagonal dominates
@@ -3058,10 +3058,10 @@ def random_sparse_pd_matrix(matrix_size, density=0.01, **kwargs):
 
     target_nnz = density * matrix_size * matrix_size
     while len(data) < target_nnz:
-        i = random.randint(0, matrix_size - 1)
-        j = random.randint(0, matrix_size - 1)
+        i = secrets.SystemRandom().randint(0, matrix_size - 1)
+        j = secrets.SystemRandom().randint(0, matrix_size - 1)
         if i != j:
-            theta = random.uniform(0, 2 * math.pi)
+            theta = secrets.SystemRandom().uniform(0, 2 * math.pi)
             cs = math.cos(theta)
             sn = math.sin(theta)
             multiply(data, matrix_size, i, j, cs, sn, left=True)
