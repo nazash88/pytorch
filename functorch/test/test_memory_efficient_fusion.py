@@ -9,9 +9,9 @@ from functorch.compile import memory_efficient_fusion
 from functorch._src.compile_utils import fx_graph_cse
 from torch.testing._internal.common_utils import TestCase, run_tests
 import inspect
-import random
 from typing import Callable
 import unittest
+import secrets
 
 HAS_CUDA = torch.cuda.is_available()
 
@@ -353,7 +353,7 @@ class RandomOpTestCase(TestCase):
             vals = [x]
             ops = [torch.clone, torch.cos, torch.tanh, torch.nn.functional.gelu]
             for _ in range(100):
-                new_val = random.choice(ops)(random.choice(vals))
+                new_val = secrets.choice(ops)(secrets.choice(vals))
                 vals.append(new_val)
             return vals[-1]
 

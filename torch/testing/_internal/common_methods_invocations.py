@@ -5,7 +5,6 @@ import functools
 import collections
 import copy
 import operator
-import random
 import unittest
 import math
 
@@ -94,6 +93,7 @@ from torch.testing._internal.opinfo.core import (  # noqa: F401
     ForeachFuncInfo,
 )
 from torch.testing._internal import opinfo
+import secrets
 
 if TEST_SCIPY:
     from scipy import stats
@@ -5986,7 +5986,7 @@ def sample_inputs_cross_entropy(op_info, device, dtype, requires_grad, **kwargs)
 
             if "ignore_index" in kwargs and torch.all(target == kwargs["ignore_index"]):
                 # make sure at least one item in target is not ignored
-                target[0] = random.sample(set(range(num_classes)) - {kwargs["ignore_index"]}, 1)[0]
+                target[0] = secrets.SystemRandom().sample(set(range(num_classes)) - {kwargs["ignore_index"]}, 1)[0]
 
         sample_inputs.append(SampleInput(input, args=(target,), kwargs=kwargs))
 
@@ -7127,7 +7127,7 @@ def sample_inputs_where(op_info, device, dtype, requires_grad, **kwargs):
 
         if mask_t.sum() == 0:
             def random_index(shape):
-                return tuple(map(lambda max_idx: random.randint(0, max_idx), shape))
+                return tuple(map(lambda max_idx: secrets.SystemRandom().randint(0, max_idx), shape))
 
             mask_t[random_index(mask_t.shape)] = True
             return mask_t
@@ -7633,7 +7633,7 @@ def sample_inputs_cosine_embedding_loss(op_info, device, dtype, requires_grad, *
         yield SampleInput(
             make_input(s),
             args=(make_input(s), make_target(s)),
-            kwargs=dict(reduction=r, margin=random.uniform(-1, 1))
+            kwargs=dict(reduction=r, margin=secrets.SystemRandom().uniform(-1, 1))
         )
 
 def sample_inputs_ctc_loss(op_info, device, dtype, requires_grad, **kwargs):
@@ -7776,11 +7776,11 @@ def sample_inputs_gaussian_nll_loss(op_info, device, dtype, requires_grad, **kwa
                 )
                 yield (
                     _make_tensor(s), _make_tensor(t_s), make_var(v_s),
-                    dict(eps=random.uniform(1e-6, 1e-3), reduction=r)
+                    dict(eps=secrets.SystemRandom().uniform(1e-6, 1e-3), reduction=r)
                 )
                 yield (
                     _make_tensor(s), _make_tensor(t_s), make_var(v_s),
-                    dict(full=True, eps=random.uniform(1e-6, 1e-3), reduction=r)
+                    dict(full=True, eps=secrets.SystemRandom().uniform(1e-6, 1e-3), reduction=r)
                 )
 
     for input, target, var, kwargs in gen_shape_kwargs():
@@ -7798,7 +7798,7 @@ def sample_inputs_hinge_embedding_loss(op_info, device, dtype, requires_grad, **
         mask = torch.rand_like(target) > 0.5
         target[mask] = 1
         target[~mask] = -1
-        d['margin'] = random.uniform(-9, 9)
+        d['margin'] = secrets.SystemRandom().uniform(-9, 9)
         yield SampleInput(input, args=(target, ), kwargs=d)
 
     # scalar input and target.
@@ -7846,7 +7846,7 @@ def reference_inputs_hinge_embedding_loss(op, device, dtype, requires_grad, **kw
 
 def sample_inputs_huber_loss(op_info, device, dtype, requires_grad, **kwargs):
     for input, target, d in _generate_sample_inputs_nn_loss(op_info, device, dtype, requires_grad, **kwargs):
-        d['delta'] = random.uniform(1e-3, 9)
+        d['delta'] = secrets.SystemRandom().uniform(1e-3, 9)
         yield SampleInput(input, args=(target, ), kwargs=d)
 
 def sample_inputs_poisson_nll_loss(op_info, device, dtype, requires_grad, **kwargs):
@@ -7878,7 +7878,7 @@ def sample_inputs_poisson_nll_loss(op_info, device, dtype, requires_grad, **kwar
                     yield (
                         i2, t2,
                         dict(log_input=li, full=f,
-                             eps=random.uniform(1e-8, 1e-3),
+                             eps=secrets.SystemRandom().uniform(1e-8, 1e-3),
                              reduction=r)
                     )
 
