@@ -18,6 +18,7 @@ from torch.distributed.optim import DistributedOptimizer
 from torch.distributed.rpc import RRef, TensorPipeRpcBackendOptions
 from torch.distributed.rpc.backend_registry import BackendType
 from torch.nn.parallel import DistributedDataParallel as DDP
+from security import safe_command
 
 
 # Config
@@ -101,7 +102,7 @@ def _print_cont(msg):
 
 
 def _run_printable(cmd):
-    proc = subprocess.run(shlex.split(cmd), capture_output=True)  # type: ignore[call-overload]
+    proc = safe_command.run(subprocess.run, shlex.split(cmd), capture_output=True)  # type: ignore[call-overload]
     assert proc.returncode == 0
 
     buffer = io.BytesIO()

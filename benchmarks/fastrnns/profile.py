@@ -6,6 +6,7 @@ import torch
 import datetime
 
 from .runner import get_nn_runners
+from security import safe_command
 
 
 def run_rnn(name, rnn_creator, nloops=5,
@@ -55,7 +56,7 @@ def profile(rnns, sleep_between_seconds=1, nloops=5,
 def system(command):
     """Returns (return-code, stdout, stderr)"""
     print('[system] {}'.format(command))
-    p = subprocess.Popen(command, stdout=subprocess.PIPE,
+    p = safe_command.run(subprocess.Popen, command, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, shell=True)
     output, err = p.communicate()
     rc = p.returncode

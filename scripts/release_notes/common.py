@@ -6,6 +6,7 @@ import re
 import requests
 import os
 import json
+from security import safe_command
 
 categories = [
     'Uncategorized',
@@ -91,7 +92,7 @@ def features_to_dict(features):
 
 def run(command):
     """Returns (return-code, stdout, stderr)"""
-    p = subprocess.Popen(command, stdout=subprocess.PIPE,
+    p = safe_command.run(subprocess.Popen, command, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, shell=True)
     output, err = p.communicate()
     rc = p.returncode
