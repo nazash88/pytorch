@@ -18,7 +18,7 @@ from torch.utils.cpp_extension import (
 cwd = os.path.dirname(os.path.abspath(__file__))
 version_txt = os.path.join(cwd, 'version.txt')
 with open(version_txt, 'r') as f:
-    version = f.readline().strip()
+    version = f.readline(5_000_000).strip()
 
 try:
     sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=cwd).decode('ascii').strip()
