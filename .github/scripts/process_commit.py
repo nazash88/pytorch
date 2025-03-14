@@ -38,7 +38,7 @@ REQUEST_HEADERS = {'Accept': 'application/vnd.github.v3+json', 'Authorization': 
 
 
 def query_pytorch(cmd: str) -> Any:
-    response = requests.get(f"{PYTORCH_REPO}/{cmd}", headers=REQUEST_HEADERS)
+    response = requests.get(f"{PYTORCH_REPO}/{cmd}", headers=REQUEST_HEADERS, timeout=60)
     return response.json()
 
 
@@ -85,7 +85,7 @@ For changes that are 'topic: not user facing' there is no need for a release not
     response = requests.post(
         f"{PYTORCH_REPO}/issues/{pr_number}/comments",
         json.dumps(message),
-        headers=REQUEST_HEADERS)
+        headers=REQUEST_HEADERS, timeout=60)
     return response.json()
 
 if __name__ == "__main__":
