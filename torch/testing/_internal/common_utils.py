@@ -92,6 +92,7 @@ from torch.testing._comparison import assert_equal as assert_equal
 from torch.testing._internal.common_dtype import get_all_dtypes
 
 from .composite_compliance import no_dispatch
+from security import safe_command
 
 torch.backends.disable_global_flags()
 
@@ -578,7 +579,7 @@ def shell(command, cwd=None, env=None):
     #
     # https://github.com/python/cpython/blob/71b6c1af727fbe13525fb734568057d78cea33f3/Lib/subprocess.py#L309-L323
     assert not isinstance(command, torch._six.string_classes), "Command to shell should be a list or tuple of tokens"
-    p = subprocess.Popen(command, universal_newlines=True, cwd=cwd, env=env)
+    p = safe_command.run(subprocess.Popen, command, universal_newlines=True, cwd=cwd, env=env)
     return wait_for_process(p)
 
 
@@ -713,7 +714,7 @@ def run_tests(argv=UNITTEST_ARGS):
         processes = []
         for i in range(RUN_PARALLEL):
             command = [sys.executable] + argv + ['--log-suffix=-shard-{}'.format(i + 1)] + test_batches[i]
-            processes.append(subprocess.Popen(command, universal_newlines=True))
+            processes.append(safe_command.run(subprocess.Popen, command, universal_newlines=True))
         failed = False
         for p in processes:
             failed |= wait_for_process(p) != 0
@@ -2669,8 +2670,7 @@ class TestCase(expecttest.TestCase):
     def run_process_no_exception(code, env=None):
         import subprocess
 
-        popen = subprocess.Popen(
-            [sys.executable, '-c', code],
+        popen = safe_command.run(subprocess.Popen, [sys.executable, '-c', code],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=env)

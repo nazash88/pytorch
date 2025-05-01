@@ -2,6 +2,7 @@
 
 import subprocess
 import os
+from security import safe_command
 
 COMMON_TESTS = [
     (
@@ -51,5 +52,5 @@ if __name__ == "__main__":
                 command_string = " ".join(command_args)
                 print("Reruning with traceback enabled")
                 print("Command:", command_string)
-                subprocess.run(command_args, check=False)
+                safe_command.run(subprocess.run, command_args, check=False)
             exit(e.returncode)

@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Set, Tuple, Union
 
 from execution.work import PYTHON_CMD, SHELL, InProgress, WorkOrder
 from worker.main import WorkerFailure, WorkerOutput
+from security import safe_command
 
 
 CPU_COUNT: int = multiprocessing.cpu_count()
@@ -244,8 +245,7 @@ class Runner:
 
         for source_cmd in (source_cmds or {""}):
             cmd = f'{source_cmd}{PYTHON_CMD} -c "import torch"'
-            proc = subprocess.run(
-                cmd,
+            proc = safe_command.run(subprocess.run, cmd,
                 shell=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
