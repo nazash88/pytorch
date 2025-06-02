@@ -29,7 +29,7 @@ def tail_logfile(
 
     with open(file, "r") as fp:
         while True:
-            line = fp.readline()
+            line = fp.readline(5_000_000)
 
             if line:
                 dst.write(f"{header}{line}")
