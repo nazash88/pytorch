@@ -43,11 +43,11 @@ REQUEST_HEADERS = {
 response = requests.get(
     f"{PYTORCH_GITHUB_API}/actions/runs/{args.workflow_run_id}/jobs?per_page=100",
     headers=REQUEST_HEADERS,
-)
+timeout=60)
 
 jobs = response.json()["jobs"]
 while "next" in response.links.keys():
-    response = requests.get(response.links["next"]["url"], headers=REQUEST_HEADERS)
+    response = requests.get(response.links["next"]["url"], headers=REQUEST_HEADERS, timeout=60)
     jobs.extend(response.json()["jobs"])
 
 # Sort the jobs list by start time, in descending order. We want to get the most
