@@ -1,8 +1,8 @@
 import numpy as np
 import itertools
-import random
 import os
 import bisect
+import secrets
 
 
 """Performance microbenchmarks's utils.
@@ -66,8 +66,8 @@ def cross_product(*inputs):
 
 
 def get_n_rand_nums(min_val, max_val, n):
-    random.seed((1 << 32) - 1)
-    return random.sample(range(min_val, max_val), n)
+    secrets.SystemRandom().seed((1 << 32) - 1)
+    return secrets.SystemRandom().sample(range(min_val, max_val), n)
 
 
 def generate_configs(**configs):
@@ -212,7 +212,7 @@ class RandomSample(object):
         # TODO(mingzhe09088): cache the results to avoid recalculation overhead
         assert len(values) == len(weights)
         _distribution_func_vals = self._distribution_func(key, weights)
-        x = random.random()
+        x = secrets.SystemRandom().random()
         idx = bisect.bisect(_distribution_func_vals, x)
 
         assert idx <= len(values), "Wrong index value is returned"

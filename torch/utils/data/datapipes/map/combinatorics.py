@@ -1,8 +1,8 @@
-import random
 
 from torch.utils.data.datapipes._decorator import functional_datapipe
 from torch.utils.data.datapipes.datapipe import MapDataPipe
 from typing import Iterator, List, Optional, TypeVar
+import secrets
 
 __all__ = ["ShufflerMapDataPipe", ]
 
@@ -47,7 +47,7 @@ class ShufflerMapDataPipe(MapDataPipe[T_co]):
         self.indices = list(range(len(datapipe))) if indices is None else indices
         self.index_map = {index_name: num_index for num_index, index_name in enumerate(self.indices)}
         # We do not lazily shuffle because this way is significantly faster in terms of total time
-        random.shuffle(self.indices)
+        secrets.SystemRandom().shuffle(self.indices)
 
     def __getitem__(self, index) -> T_co:
         try:

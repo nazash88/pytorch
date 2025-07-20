@@ -1,8 +1,8 @@
-import random
 import unittest
 from typing import Dict, List, Tuple
 
 from tools.testing.test_selections import calculate_shards
+import secrets
 
 
 class TestCalculateShards(unittest.TestCase):
@@ -168,8 +168,8 @@ class TestCalculateShards(unittest.TestCase):
 
     def test_calculate_2_shards_against_optimal_shards(self) -> None:
         for _ in range(100):
-            random.seed(120)
-            random_times = {k: random.random() * 10 for k in self.tests}
+            secrets.SystemRandom().seed(120)
+            random_times = {k: secrets.SystemRandom().random() * 10 for k in self.tests}
             # all test times except first two
             rest_of_tests = [
                 i

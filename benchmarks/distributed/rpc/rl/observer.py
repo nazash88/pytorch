@@ -1,4 +1,3 @@
-import random
 import time
 
 import torch
@@ -6,6 +5,7 @@ import torch.distributed.rpc as rpc
 from torch.distributed.rpc import rpc_sync
 
 from agent import AgentBase
+import secrets
 
 
 class ObserverBase:
@@ -39,7 +39,7 @@ class ObserverBase:
             action (int): Int received from agent representing action to take on state
         """
         state = torch.rand(self.state_size)
-        reward = random.randint(0, 1)
+        reward = secrets.SystemRandom().randint(0, 1)
 
         return state, reward
 
