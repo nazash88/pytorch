@@ -4,6 +4,7 @@ import subprocess
 import requests
 from typing import Any, Dict
 from argparse import ArgumentParser
+from security import safe_command
 
 MERGEBOT_TOKEN = os.environ["MERGEBOT_TOKEN"]
 PYTORCHBOT_TOKEN = os.environ["PYTORCHBOT_TOKEN"]
@@ -92,8 +93,7 @@ def is_newer_hash(new_hash: str, old_hash: str, repo_name: str) -> bool:
     def _get_date(hash: str) -> int:
         # this git command prints the unix timestamp of the hash
         return int(
-            subprocess.run(
-                f"git show --no-patch --no-notes --pretty=%ct {hash}".split(),
+            safe_command.run(subprocess.run, f"git show --no-patch --no-notes --pretty=%ct {hash}".split(),
                 capture_output=True,
                 cwd=f"{repo_name}",
             )
@@ -126,8 +126,7 @@ def main() -> None:
         )
 
     hash = (
-        subprocess.run(
-            f"git rev-parse {args.branch}".split(),
+        safe_command.run(subprocess.run, f"git rev-parse {args.branch}".split(),
             capture_output=True,
             cwd=f"{args.repo_name}",
         )
@@ -141,12 +140,11 @@ def main() -> None:
         f.write(f"{hash}\n")
     if is_newer_hash(hash, old_hash, args.repo_name):
         # if there was an update, push to branch
-        subprocess.run(f"git checkout -b {branch_name}".split())
-        subprocess.run(f"git add .github/ci_commit_pins/{args.repo_name}.txt".split())
-        subprocess.run(
-            "git commit -m".split() + [f"update {args.repo_name} commit hash"]
+        safe_command.run(subprocess.run, f"git checkout -b {branch_name}".split())
+        safe_command.run(subprocess.run, f"git add .github/ci_commit_pins/{args.repo_name}.txt".split())
+        safe_command.run(subprocess.run, "git commit -m".split() + [f"update {args.repo_name} commit hash"]
         )
-        subprocess.run(f"git push --set-upstream origin {branch_name} -f".split())
+        safe_command.run(subprocess.run, f"git push --set-upstream origin {branch_name} -f".split())
         print(f"changes pushed to branch {branch_name}")
         if pr_num is None:
             # no existing pr, so make a new one and approve it

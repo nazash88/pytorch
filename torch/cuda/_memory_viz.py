@@ -4,6 +4,8 @@ import os
 import io
 import subprocess
 from typing import Dict, Any
+from security import safe_command
+
 __all__ = ["format_flamegraph", "segments", "memory", "compare", "stats", "Bytes"]
 
 def _frame_fmt(f):
@@ -22,7 +24,7 @@ def format_flamegraph(flamegraph_lines, flamegraph_script=None):
             'https://raw.githubusercontent.com/brendangregg/FlameGraph/master/flamegraph.pl', flamegraph_script)
         subprocess.run(['chmod', '+x', flamegraph_script])
     args = [flamegraph_script, '--countname', 'bytes']
-    p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding='utf-8')
+    p = safe_command.run(subprocess.Popen, args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding='utf-8')
     assert p.stdin is not None
     assert p.stdout is not None
     p.stdin.write(flamegraph_lines)

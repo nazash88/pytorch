@@ -15,6 +15,7 @@ import time
 from typing import Tuple, Dict
 
 from . import blas_compare_setup
+from security import safe_command
 
 
 MIN_RUN_TIME = 1
@@ -119,8 +120,7 @@ def run_subprocess(args):
         }
         env_vars.update(extra_env_vars or {})
 
-        subprocess.run(
-            f"source activate {env} && "
+        safe_command.run(subprocess.run, f"source activate {env} && "
             f"taskset --cpu-list {core_str} "
             f"python {os.path.abspath(__file__)} "
             "--DETAIL_in_subprocess "
@@ -194,8 +194,7 @@ def main():
 
     # Any env will do, it just needs to have torch for benchmark utils.
     env_path = os.path.join(blas_compare_setup.WORKING_ROOT, BLAS_CONFIGS[0][1])
-    subprocess.run(
-        f"source activate {env_path} && "
+    safe_command.run(subprocess.run, f"source activate {env_path} && "
         f"python {os.path.abspath(__file__)} "
         "--DETAIL_in_compare",
         shell=True
