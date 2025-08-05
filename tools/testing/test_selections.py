@@ -4,6 +4,7 @@ import subprocess
 from typing import Dict, List, Tuple
 
 from tools.stats.import_test_stats import get_disabled_tests, get_slow_tests
+from security import safe_command
 
 
 def calculate_shards(
@@ -43,7 +44,7 @@ def calculate_shards(
 def _query_changed_test_files() -> List[str]:
     default_branch = f"origin/{os.environ.get('GIT_DEFAULT_BRANCH', 'master')}"
     cmd = ["git", "diff", "--name-only", default_branch, "HEAD"]
-    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = safe_command.run(subprocess.run, cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if proc.returncode != 0:
         raise RuntimeError("Unable to get changed files")
